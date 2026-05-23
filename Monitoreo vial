@@ -1,0 +1,137 @@
+import requests
+import time
+from datetime import datetime
+
+TOKEN = "AQUI_TU_TOKEN"
+CHAT_ID = "AQUI_TU_CHAT_ID"
+
+KEYWORDS = [
+    "bloqueo",
+    "cierre total",
+    "cierre parcial",
+    "manifestación",
+    "presencia de personas",
+    "accidente",
+    "incendio vehicular",
+    "volcadura",
+    "tráfico detenido",
+    "congestión vehicular",
+    "salida de carretera",
+    "choque múltiple"
+]
+
+FUENTES = [
+    {
+        "tipo": "x",
+        "nombre": "CAPUFE",
+        "usuario": "CAPUFE"
+    },
+
+    {
+        "tipo": "x",
+        "nombre": "Guardia Nacional",
+        "usuario": "GN_Carreteras"
+    },
+
+    {
+        "tipo": "x",
+        "nombre": "Arco Norte",
+        "usuario": "arconorte"
+    }
+]
+
+EVENTOS_ENVIADOS = []
+
+
+def enviar_telegram(mensaje):
+
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+
+    payload = {
+        "chat_id": CHAT_ID,
+        "text": mensaje
+    }
+
+    requests.post(url, json=payload)
+
+
+
+def detectar_evento(texto):
+
+    texto = texto.lower()
+
+    for palabra in KEYWORDS:
+
+        if palabra.lower() in texto:
+            return palabra
+
+    return None
+
+
+
+def generar_alerta(tipo, texto, fuente):
+
+    hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    mensaje = f"""
+🚨 ALERTA DETECTADA
+
+Tipo:
+{tipo}
+
+Fuente:
+{fuente}
+
+Hora:
+{hora}
+
+Reporte:
+{texto}
+"""
+
+    return mensaje
+
+
+
+def simulador_reportes():
+
+    reportes = [
+        "Accidente en Arco Norte km 145",
+        "Presencia de personas tramo SLP Zacatecas",
+        "Vialidad libre en carretera 57",
+        "Bloqueo por manifestación"
+    ]
+
+    return reportes
+
+
+while True:
+
+    try:
+
+        reportes = simulador_reportes()
+
+        for reporte in reportes:
+
+            if reporte in EVENTOS_ENVIADOS:
+                continue
+
+            tipo = detectar_evento(reporte)
+
+            if tipo:
+
+                alerta = generar_alerta(
+                    tipo,
+                    reporte,
+                    "Monitor Logístico"
+                )
+
+                enviar_telegram(alerta)
+
+                EVENTOS_ENVIADOS.append(reporte)
+
+        time.sleep(30)
+
+    except Exception as e:
+        print(e)
+        time.sleep(60)
