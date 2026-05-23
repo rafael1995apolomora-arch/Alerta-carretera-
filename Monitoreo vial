@@ -2,8 +2,8 @@ import requests
 import time
 from datetime import datetime
 
-TOKEN = "AQUI_TU_TOKEN"
-CHAT_ID = "AQUI_TU_CHAT_ID"
+TOKEN = "8900913931:AAEzahn_q9I_xWEhB6wcZJEVDmLMnJ3BakI"
+CHAT_ID = "8900913931"
 
 KEYWORDS = [
     "bloqueo",
